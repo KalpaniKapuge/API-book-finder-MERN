@@ -11,6 +11,20 @@ export function getProducts(req, res) {
 }
 
 export function saveProducts(req, res) {
+
+    if(req.user == null){
+        res.status(403).json({
+            message : "Unauthorized"
+        })
+        return
+    }
+    
+    if(req.user.role != "admin"){
+        res.status(403).json({
+            message : "Unauthorized you need to be an admin"
+        })
+        return
+    }
     const product = new Product({
         name: req.body.name,
         price: req.body.price,
