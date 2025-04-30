@@ -6,11 +6,11 @@ const orderSchema = mongoose.Schema({
         required : true,
         unique : true
     },
-    name : {
+    email : {
         type : String,
         required : true
     },
-    email : {
+    name : {
         type : String,
         required : true
     },
@@ -25,7 +25,7 @@ const orderSchema = mongoose.Schema({
     status : {
         type : String,
         required : true,
-        default : "Pending"
+        default : "pending"
     },
     labelledTotal : {
         type : Number,
@@ -35,44 +35,48 @@ const orderSchema = mongoose.Schema({
         type : Number,
         required : true
     },
-    products : [{
-        productInfo : {
-            type : String,
-            required : true
-        },
-        name : {
-            type : String,
-            required : true
-        },
-        altNames : [{
-            type : String,
-        }],
-        description : {
-            type : String,
-            required : true
-        },
-        images : [{
-            type : String
-        }],
-        labelledPrice : {
-            type : Number,
-            required : true
-        },
-        price : {
-            type : Number,
-            required : true
-        },
-        quantity : {
-            type : Number,
-            required : true
+    products : [
+        {
+            productInfo : {
+                productId : {
+                    type : String,
+                    required : true
+                },
+                name : {
+                    type : String,
+                    required : true
+                },
+                altNames : [{
+                    type : String
+                }],
+                description : {
+                    type : String,
+                    required : true
+                },
+                images : [{
+                    type : String
+                }],
+                labelledPrice : {
+                    type : Number,
+                    required : true
+                },
+                price : {
+                    type : Number,
+                    required : true
+                }
+            },
+            quantity : {
+                type : Number,
+                required : true
+            },
         }
-    }],
+    ],
     date : {
         type : Date,
         default : Date.now
     }
+
 })
 
-const Order = mongoose.model("orders",orderSchema)
-
-export default Order;
+const Order = mongoose.model("orders", orderSchema)
+export default Order
