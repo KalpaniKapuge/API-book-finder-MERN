@@ -1,35 +1,37 @@
 import Review from "../models/review.js";
-import { isAdmin } from "./userController.js"; // Make sure this exists
+import { request, response } from "express";
 
-// Get all reviews
-export async function getAllReview(req, res) {
-    try {
-        const productId = req.query.productId;
-        const filter = productId ? { productId: productId } : {};
+//get all review 
+export async function getAllReview(req,res){
+    try{
+        const productId = request.query.productId;
 
+        const filter = productId ? {productId : productId} : {};
         const reviews = await Review.find(filter);
+
         res.json(reviews);
-    } catch (err) {
+
+
+    }catch(err){
         res.status(500).json({
-            message: "Failed to fetch reviews",
-            error: err.message
-        });
+            message : "Failed to fetch reviews",
+            error : err.message
+        })
     }
 }
 
-// Get single review by reviewId
+//single review by id
 export async function getReviewById(req, res) {
     const reviewId = req.params.reviewId;
 
     try {
-        const review = await Review.findOne({ reviewId: reviewId });
+        const review = await Review.findOne({ reviewId: reviewId }); // fixed typo
 
         if (!review) {
             return res.status(404).json({
                 message: "Review not found"
             });
         }
-
         res.json(review);
     } catch (err) {
         res.status(500).json({
@@ -39,17 +41,20 @@ export async function getReviewById(req, res) {
     }
 }
 
-// Add a new review
+//add review
 export async function addReview(req, res) {
     try {
-        const { reviewId, productId, username, rating, comment } = req.body;
+        const { reviewId, productId, rating, comment } = req.body;
+        const userId = req.user?.userId; // ✅ get userId from token
+        const username = req.user?.firstName + " " + req.user?.lastName;
 
         const newReview = new Review({
-            reviewId,
-            productId,
-            username,
-            rating,
-            comment
+            reviewId: reviewId,
+            productId: productId,
+            userId: userId, // 🔥 Store userId
+            username: username,
+            rating: rating,
+            comment: comment
         });
 
         await newReview.save();
@@ -65,12 +70,12 @@ export async function addReview(req, res) {
     }
 }
 
-// Update a review
+//update review
 export async function updateReview(req, res) {
     const reviewId = req.params.reviewId;
 
     try {
-        const existingReview = await Review.findOne({ reviewId });
+        const existingReview = await Review.findOne({ reviewId: reviewId }); // 🔥 Get existing review
 
         if (!existingReview) {
             return res.status(404).json({
@@ -78,14 +83,15 @@ export async function updateReview(req, res) {
             });
         }
 
-        // Optionally restrict to admins only
-        if (!isAdmin(req)) {
+        const isSameUser = req.user && req.user.userId == existingReview.userId;
+
+        if (!isSameUser && !isAdmin(req)) {
             return res.status(403).json({
                 message: "Unauthorized access"
             });
         }
 
-        await Review.updateOne({ reviewId }, req.body);
+        await Review.updateOne({ reviewId: reviewId }, req.body);
 
         res.json({
             message: "Review updated successfully"
