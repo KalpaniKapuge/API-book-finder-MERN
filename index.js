@@ -1,13 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import productRouter from './routes/productRouter.js';
-import userRouter from './routes/userRouter.js';
 import jwt from 'jsonwebtoken';
-import orderRouter from './routes/orderRouter.js';
-import reviewRouter from './routes/reviewRouter.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import userRouter from './src/routes/userRouter.js';
 dotenv.config();
 
 const app = express();
@@ -54,15 +51,12 @@ mongoose.connect(process.env.MONGODB_URL).then(
     }
 );
 
+app.use("/users",userRouter)
 
-app.use("/api/products",productRouter)
 
-app.use("/api/users",userRouter)
-
-app.use("/api/orders",orderRouter)
-
-app.use("/api/reviews",reviewRouter)
-
-app.listen(5000, () => {
-    console.log("Server is running on port 5000");
+app.listen(3000, () => {
+    console.log("Server is running on port 3000");
 });
+
+
+

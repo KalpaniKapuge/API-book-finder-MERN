@@ -18,15 +18,15 @@ const userSchema = mongoose.Schema({
         type : String,
         required : true
     },
-    role : {
-        type : String,
-        required : true,
-        default : "Customer"
-    },
     img : {
         type : String,
         required : false,
         default : "https://www.google.com/url?sa=i&url=https%3A%2F%2Fschedule.ula.edu.pe%2Fen%2Fdefault-avatar-profile-icon-vector-user-image-stock-vector.html&psig=AOvVaw1Yuz5nIkaDfwoE8UUKpzUT&ust=1745826116294000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNDsjKHb94wDFQAAAAAdAAAAABBF"
+    },
+    role : {
+        type : String,
+        required : true,
+        default : "user"
     },
     isBlocked : {
         type : Boolean,
