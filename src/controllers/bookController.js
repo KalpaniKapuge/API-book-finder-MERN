@@ -1,10 +1,20 @@
 import axios from 'axios';
-import Book from '../models/bookModel.js';
+import Book from '../models/book.js';
+
 
 export const searchBooks = async (req, res) => {
-  const { query } = req.query;
+  
+  const query = req.query.query;
+  const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
+
+  if (!query) {
+    return res.status(400).json({ message: "Query is required" });
+  }
+
   try {
-    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
+    const googleApiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&key=${apiKey}`;
+
+    const response = await axios.get(googleApiUrl);
     const books = response.data.items.map((item) => {
       const volume = item.volumeInfo;
       return {
