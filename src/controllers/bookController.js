@@ -11,15 +11,15 @@ export const searchBooks = async (req, res) => {
   }
 
   try {
-    // Calculate startIndex for pagination
-    const startIndex = (page - 1) * 9;
+    const maxResults = 9;
+    const startIndex = (page - 1) * maxResults;
 
-    // Fetch 9 books from Google Books API
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=9&key=${apiKey}`;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=${maxResults}&key=${apiKey}`;
     const response = await axios.get(url);
-    const items = response.data.items || [];
 
-    // Map API results to your book model format
+    const items = response.data.items || [];
+    const totalItems = response.data.totalItems || 0; // <-- This is important
+
     const books = items.map((item) => {
       const volume = item.volumeInfo;
       return {
@@ -33,7 +33,7 @@ export const searchBooks = async (req, res) => {
       };
     });
 
-    // Upsert books into your DB (optional)
+    // Save to DB only if not already there
     for (const book of books) {
       await Book.updateOne(
         { bookId: book.bookId },
@@ -42,11 +42,10 @@ export const searchBooks = async (req, res) => {
       );
     }
 
-    // Return books and pagination info
     res.json({
       books,
-      totalBooks: response.data.totalItems || books.length,
-      currentPage: page,
+      totalBooks: totalItems,
+      currentPage: page
     });
   } catch (err) {
     console.error('Google API error:', err.message);
