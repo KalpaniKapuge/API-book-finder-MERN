@@ -1,5 +1,5 @@
+// backend/index.js
 import express from 'express';
-import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -13,28 +13,24 @@ dotenv.config();
 
 const app = express();
 
+// ✅ Updated CORS setup
 app.use(cors({
-  origin: 'https://api-book-finder-frontend.vercel.app', 
+  origin: 'https://api-book-finder-frontend.vercel.app',
   credentials: true,
 }));
-app.use(bodyParser.json());
+
+// ✅ Use express.json instead of body-parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(process.env.MONGODB_URL)
-  .then(
-    () => console.log("Connected to the database")
-   )
-  .catch(
-    (err) => console.error("Database connection failed:", err)
-   );
+  .then(() => console.log("Connected to the database"))
+  .catch((err) => console.error("Database connection failed:", err));
 
-
-// Public routes
+// Routes
 app.use("/api/users", userRouter);
 app.use("/api/books", bookRouter); 
-
-// Protected route
 app.use("/api/wishlist", authenticateToken, wishlistRouter);
- 
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
