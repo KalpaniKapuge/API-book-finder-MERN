@@ -12,7 +12,7 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allow Vercel & Localhost for frontend access
+
 app.use(cors({
   origin: [
     'https://api-book-finder-frontend.vercel.app',
@@ -24,24 +24,24 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Connect MongoDB
-mongoose.connect(process.env.MONGODB_URL)
-  .then(() => console.log("✅ Connected to the database"))
-  .catch((err) => console.error("❌ Database connection failed:", err));
 
-// ✅ Routes
+mongoose.connect(process.env.MONGODB_URL)
+  .then(() => console.log("Connected to the database"))
+  .catch((err) => console.error(" Database connection failed:", err));
+
+
 app.use("/api/users", userRouter);
 app.use("/api/books", bookRouter);
 app.use("/api/wishlist", authenticateToken, wishlistRouter);
 
-// ✅ Global error handler
+
 app.use((err, req, res, next) => {
-  console.error("❌ Global Error:", err.stack);
+  console.error("Global Error:", err.stack);
   res.status(500).json({ message: err.message || "Internal Server Error" });
 });
 
-// ✅ Start server
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
