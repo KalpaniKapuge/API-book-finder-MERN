@@ -11,8 +11,8 @@ export const searchBooks = async (req, res) => {
   }
 
   try {
-    const startIndex = (page - 1) * 10;
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=10&key=${apiKey}`;
+    const startIndex = (page - 1) * 9;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=9&key=${apiKey}`;
     const response = await axios.get(url);
     const items = response.data.items || [];
 
