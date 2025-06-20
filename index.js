@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: 'https://api-book-finder-frontend.vercel.app', 
   credentials: true,
 }));
 app.use(bodyParser.json());
