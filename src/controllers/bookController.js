@@ -11,11 +11,15 @@ export const searchBooks = async (req, res) => {
   }
 
   try {
+    // Calculate startIndex for pagination
     const startIndex = (page - 1) * 9;
+
+    // Fetch 9 books from Google Books API
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&maxResults=9&key=${apiKey}`;
     const response = await axios.get(url);
     const items = response.data.items || [];
 
+    // Map API results to your book model format
     const books = items.map((item) => {
       const volume = item.volumeInfo;
       return {
@@ -29,7 +33,7 @@ export const searchBooks = async (req, res) => {
       };
     });
 
-    // Save to DB only for these books
+    // Upsert books into your DB (optional)
     for (const book of books) {
       await Book.updateOne(
         { bookId: book.bookId },
@@ -38,6 +42,7 @@ export const searchBooks = async (req, res) => {
       );
     }
 
+    // Return books and pagination info
     res.json({
       books,
       totalBooks: response.data.totalItems || books.length,
